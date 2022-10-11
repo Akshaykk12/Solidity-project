@@ -1,8 +1,30 @@
-const path = require('path');
-const fs = require('fs');
-const solc = require('solc');
+const path = require("path");
+const fs = require("fs");
+const solc = require("solc");
 
-const inboxPath = path.resolve(__dirname, 'contracts', 'Inbox.sol');
-const source = fs.readFileSync(inboxPath, 'utf8')
+const inboxPath = path.resolve(__dirname, "contracts", "Inbox.sol");
+const source = fs.readFileSync(inboxPath, "utf8");
 
-module.exports = solc.compile(source, 1).contracts[':Inbox'];
+let input = {
+  language: "Solidity",
+  sources: {
+    [inboxPath]: {
+      content: source,
+    },
+  },
+
+  settings: {
+    outputSelection: {
+      "*": {
+        "*": ["*"],
+      },
+    },
+  },
+};
+
+var output = JSON.parse(solc.compile(JSON.stringify(input)));
+
+module.exports = {
+  abi: output.contracts[[inboxPath]]["Inbox"].abi,
+  bytecode: output.contracts[[inboxPath]]["Inbox"].evm.bytecode.object,
+};
